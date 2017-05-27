@@ -1,0 +1,44 @@
+table.mycandy-about-github {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+table.mycandy-about-github tbody:hover {
+    cursor: pointer;
+}
+
+table.mycandy-about-github tbody tr:nth-last-child(1) td {
+    border: none !important;
+    padding: 0;
+}
+
+table.mycandy-about-github tbody tr:nth-last-child(1) {
+    background-color: transparent;
+}
+
+table.mycandy-about-github tbody th > span:nth-child(1) {
+    float: left;
+}
+
+table.mycandy-about-github tbody th > span:nth-child(2) {
+    float: right;
+}
+
+tbody.mycandy-about-mouseover {
+    color: #353535;
+}
+
+tbody.mycandy-about-mouseover td {
+    border-left: 1px #f259ab solid !important;
+    border-right: 1px #f259ab solid !important;
+}
+
+tbody.mycandy-about-mouseover tr:nth-child(1) th {
+    border: 1px #f259ab solid !important;
+    background-color: #f259ab !important;
+    color: white;
+}
+
+tbody.mycandy-about-mouseover tr:nth-last-child(2) td {
+    border-bottom: 1px #f259ab solid !important;
+}

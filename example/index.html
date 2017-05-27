@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的Github卡片</title>
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../sc.css" rel="stylesheet"/>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2 mycandy-article article">
+            <section id="project"></section>
+        </div>
+    </div>
+</div>
+
+<script src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="../sc.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    ShowCode.apply({
+        user: 'biezhi',
+        el: '#project',
+        type: 'repo',
+        repos: ['show-code', 'blade', 'agon', 'witty', 'nice']
+    });
+</script>
+</body>
+</html>
