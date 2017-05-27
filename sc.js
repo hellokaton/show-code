@@ -39,6 +39,9 @@ ShowCode.apply = function (config) {
     fetch(this.config.apiUrl).then(function (res) {
         return res.json();
     }).then(function (data) {
+
+        console.log('fetch finished.');
+
         // console.log(JSON.stringify(data));
         githubHtml = _this.createReposTable(data, _this.config.repos);
         // save cache
@@ -46,17 +49,20 @@ ShowCode.apply = function (config) {
         localStorage.aboutPageLastRequest = $.now();
         // display repos info
         _this.showRepos(githubHtml);
-    }).catch(function () {
+    }).catch(function (e) {
+
+        console.log(e);
+
         var error = "<span class='text-danger'>" +
             "<span class='fa fa-warning'></span> 获取 github 项目信息出错，请稍后" +
-            "<a href='' onclick='createReposHtml();return false;'>刷新</a>重试。</span>";
+            "<a href='' onclick='window.location.reload();return false;'>刷新</a>重试。</span>";
 
         // if cache is too old (saved 6 hours ago), show error
         if (timeDiff > 360 || githubHtml == "") {
-            $(el).html(error);
+            $(_this.config.el).html(error);
         } else {
             _this.showRepos(githubHtml);
-            console.warn("Could not fetch " + apiurl + ", load cache saved " + timeDiff + " minutes ago.");
+            console.warn("Could not fetch " + _this.config.apiUrl + ", load cache saved " + timeDiff + " minutes ago.");
         }
     });
 };
@@ -113,6 +119,34 @@ ShowCode.showRepos = function (html) {
 };
 
 ShowCode.createReposTable = function (data, repos) {
+    var html = "";
+    if (repos.length > 0) {
+        console.log('custom repos => ' + repos);
+        for (var i = 0; i < repos.length; i++) {
+            for (var j = 0; j < data.length; j++) {
+                var item = data[j];
+                if (repos[i].toLowerCase() == item.name.toLowerCase()) {
+                    html += this.appendHtml(item);
+                }
+            }
+        }
+    } else {
+        for (var j = 0; j < data.length; j++) {
+            var item = data[j];
+            html += this.appendHtml(item);
+        }
+    }
+    html = "<table class='mycandy-about-github'>" + html + "</table>";
+    return html;
+};
+
+ShowCode.appendHtml = function (item) {
+    var size = item.size;
+    if (size == 0) {
+        size = "未知";
+    } else {
+        size = size + "KB";
+    }
     var dateString = function (date) {
         var d = new Date(date);
         if (isNaN(d.valueOf())) {
@@ -136,99 +170,34 @@ ShowCode.createReposTable = function (data, repos) {
         timezone = sign + ((timezone < 1000) ? "0" + timezone : timezone);
         return d.getFullYear() + "-" + month + "-" + day + " " + hours + ":" + minutes + " " + timezone;
     };
-
-    var html = "";
-    if (repos.length > 0) {
-        console.log('custom repos => ' + repos);
-
-        for (var i = 0; i < repos.length; i++) {
-            for (var j = 0; j < data.length; j++) {
-
-                var item = data[j];
-
-                if (repos[i].toLowerCase() == item.name.toLowerCase()) {
-
-                    var size = item.size;
-                    if (size == 0) {
-                        size = "未知";
-                    } else {
-                        size = size + "KB";
-                    }
-                    html += "<tbody title='点击跳转到 github 页面' tabindex='0' data-github-url='" + item.html_url + "'>" +
-                        "<tr>" +
-                        "   <th>" +
-                        "       <span>" +
-                        "           <span class='fa fa-github-alt'></span> " + item.name + "" +
-                        "       </span>" +
-                        "       <span>" + item.stargazers_count + " <span class='fa fa-star-o star-o mycandy-github-star'></span>" +
-                        "       </span>" +
-                        "   </th>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "   <td>" + (item.description || '') + "</td>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "   <td>Github 地址：" + item.html_url + "</td>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "   <td>主要语言：" + (item.language || '未知') + "</td>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "   <td>大小：" + size + "</td>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "   <td>最近更新：" + dateString(item.pushed_at) + "</td>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "   <td>&nbsp;</td>" +
-                        "</tr>" +
-                        "</tbody>";
-                }
-            }
-        }
-    } else {
-        for (var j = 0; j < data.length; j++) {
-
-            var item = data[j];
-
-            var size = item.size;
-            if (size == 0) {
-                size = "未知";
-            } else {
-                size = size + "KB";
-            }
-
-            html += "<tbody title='点击跳转到 github 页面' tabindex='0' data-github-url='" + item.html_url + "'>" +
-                "<tr>" +
-                "   <th>" +
-                "       <span>" +
-                "           <span class='fa fa-github-alt'></span> " + item.name + "" +
-                "       </span>" +
-                "       <span>" + item.stargazers_count + " <span class='fa fa-star-o star-o mycandy-github-star'></span>" +
-                "       </span>" +
-                "   </th>" +
-                "</tr>" +
-                "<tr>" +
-                "   <td>" + (item.description || '') + "</td>" +
-                "</tr>" +
-                "<tr>" +
-                "   <td>Github 地址：" + item.html_url + "</td>" +
-                "</tr>" +
-                "<tr>" +
-                "   <td>主要语言：" + (item.language || '未知') + "</td>" +
-                "</tr>" +
-                "<tr>" +
-                "   <td>大小：" + size + "</td>" +
-                "</tr>" +
-                "<tr>" +
-                "   <td>最近更新：" + dateString(item.pushed_at) + "</td>" +
-                "</tr>" +
-                "<tr>" +
-                "   <td>&nbsp;</td>" +
-                "</tr>" +
-                "</tbody>";
-        }
-    }
-    html = "<table class='mycandy-about-github'>" + html + "</table>";
-    return html;
-};
+    return "<tbody title='点击跳转到 github 页面' tabindex='0' data-github-url='" + item.html_url + "'>" +
+        "<tr>" +
+        "   <th>" +
+        "       <span>" +
+        "           <span class='fa fa-github-alt'></span> " + item.name +
+        "       </span>" +
+        "       <span>" + item.stargazers_count + " <span class='fa fa-star mycandy-github-star'></span>" +
+        "       <span>" + item.forks_count + " <span class='fa fa-code-fork mycandy-github-star'></span>" +
+        "       </span>" +
+        "   </th>" +
+        "</tr>" +
+        "<tr>" +
+        "   <td>" + (item.description || '') + "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "   <td>Github 地址：" + item.html_url + "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "   <td>主要语言：" + (item.language || '未知') + "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "   <td>大小：" + size + "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "   <td>最近更新：" + dateString(item.pushed_at) + "</td>" +
+        "</tr>" +
+        "<tr>" +
+        "   <td>&nbsp;</td>" +
+        "</tr>" +
+        "</tbody>";
+}
